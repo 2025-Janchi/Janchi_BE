@@ -1,4 +1,4 @@
-package com.springboot.janchi.service;
+package com.springboot.janchi.festival.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

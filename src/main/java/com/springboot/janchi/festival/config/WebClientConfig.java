@@ -1,4 +1,4 @@
-package com.springboot.janchi.config;
+package com.springboot.janchi.festival.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
