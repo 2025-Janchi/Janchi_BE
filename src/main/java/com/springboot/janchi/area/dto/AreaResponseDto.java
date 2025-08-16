@@ -1,0 +1,73 @@
+package com.springboot.janchi.area.dto;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+public class AreaResponseDto {
+
+    @Data
+    @NoArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class AreaResponse {
+        private InnerResponse response;
+
+        @Data
+        @NoArgsConstructor
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        public static class InnerResponse {
+            private Header header;
+            private Body body;
+        }
+
+        @Data
+        @NoArgsConstructor
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        public static class Header {
+            private String resultCode;
+            private String resultMsg;
+        }
+
+        @Data
+        @NoArgsConstructor
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        public static class Body {
+            private Items items;
+            private Integer numOfRows;
+            private Integer pageNo;
+            private Integer totalCount;
+        }
+
+        @Data
+        @NoArgsConstructor
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        public static class Items {
+            @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+            private List<AreaItem> item;
+        }
+
+        @Data
+        @NoArgsConstructor
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        public static class AreaItem {
+            private String firstimage;   // 원본이미지
+            private String firstimage2;  // 썸네일 150x100
+            private String addr1;
+            private String addr2;
+            private String contentid;
+            private String contenttypeid;
+            private String tel;
+            private String title;
+
+            @JsonProperty("areacode")
+            private String areaCode;
+
+            private String mapx;
+            private String mapy;
+        }
+    }
+}
