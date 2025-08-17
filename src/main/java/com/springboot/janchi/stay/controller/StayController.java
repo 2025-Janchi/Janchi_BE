@@ -3,7 +3,10 @@ package com.springboot.janchi.stay.controller;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.janchi.area.dto.AreaResponseDto;
+import com.springboot.janchi.area.entity.Area;
 import com.springboot.janchi.stay.dto.StayResponseDto;
+import com.springboot.janchi.stay.entity.Stay;
+import com.springboot.janchi.stay.repository.StayRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +29,7 @@ public class StayController {
             .findAndRegisterModules()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-
+    private final StayRepository stayRepository;
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Value("${area.api.encoding.key}")
@@ -66,6 +69,17 @@ public class StayController {
                         && ar.getResponse().getBody().getItems() != null
                         ? ar.getResponse().getBody().getItems().getItem()
                         : List.of();
+
+        if (items.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        List<Stay> entities = items.stream()
+                .map(Stay::fromStayItem)
+                .toList();
+
+        stayRepository.saveAll(entities);
+
 
         return ResponseEntity.ok(items);
     }

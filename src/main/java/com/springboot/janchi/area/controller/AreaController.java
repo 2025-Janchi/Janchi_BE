@@ -3,6 +3,9 @@ package com.springboot.janchi.area.controller;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.janchi.area.dto.AreaResponseDto;
+import com.springboot.janchi.area.entity.Area;
+import com.springboot.janchi.area.repository.AreaRepository;
+import com.springboot.janchi.area.service.AreaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +30,7 @@ public class AreaController {
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     private final RestTemplate restTemplate = new RestTemplate();
+    private final AreaRepository areaRepository;
 
     @Value("${area.api.encoding.key}")
     private String serviceKey;
@@ -67,6 +71,15 @@ public class AreaController {
                         && ar.getResponse().getBody().getItems() != null
                         ? ar.getResponse().getBody().getItems().getItem()
                         : List.of();
+        if (items.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        List<Area> entities = items.stream()
+                .map(Area::fromAreaItem)
+                .toList();
+
+        areaRepository.saveAll(entities);
 
         return ResponseEntity.ok(items);
     }
