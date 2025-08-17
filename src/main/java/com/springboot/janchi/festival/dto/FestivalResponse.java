@@ -15,8 +15,12 @@ public class FestivalResponse {
     private String fstvlEndDate;     // 축제종료일자
     private String fstvlCo;     // 축제내용
     private String mnnstNm;   // 주관기관명
+    private String auspcInsttNm; // 주최기관명
     private String suprtInsttNm;  //후원기관명
-    private String phoneNumber;       // 홈페이지주소
+    private String phoneNumber;       // 전화번호
+    private String homepageUrl;       // 홈페이지주소
+    private String relateInfo;      // 관련 정보
+    private String rdnmadr;     // 소재지도로명주소
     private String lnmadr;     // 소재지지번주소
     private Double latitude;    // 위도
     private Double longitude;   // 경도
@@ -30,9 +34,13 @@ public class FestivalResponse {
                 it.path("fstvlEndDate").asText(null),
                 it.path("fstvlCo").asText(null),
                 it.path("mnnstNm").asText(null),
+                it.path("auspcInsttNm").asText(null),
                 it.path("suprtInsttNm").asText(null),
                 it.path("phoneNumber").asText(null),
-                firstNonBlank(it.path("lnmadr").asText(""), it.path("rdnmadr").asText("")),
+                it.path("homepageUrl").asText(null),
+                it.path("relateInfo").asText(null),
+                it.path("rdnmadr").asText(null),
+                it.path("lnmadr").asText(null),
                 parseDoubleOrNull(it.path("latitude").asText(null)),
                 parseDoubleOrNull(it.path("longitude").asText(null)),
                 it.path("referenceDate").asText(null)

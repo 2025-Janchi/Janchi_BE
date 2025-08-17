@@ -3,7 +3,7 @@ package com.springboot.janchi.festival.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.janchi.festival.dto.FestivalResponse;
-import com.springboot.janchi.festival.service.FestivalApiService;
+import com.springboot.janchi.festival.service.JanchiService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,177 +19,131 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+import java.time.ZoneId;
 import java.util.*;
-
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/public")
+@RequestMapping("/api/v1")
 public class FestivalController {
-    private final FestivalApiService festivalApiService;
-
-//@Value("${publicdata.service-key}")
-//private String serviceKey;
-//
-//    @GetMapping("/festivals")
-//    public void redirectToPublicData(HttpServletResponse response,
-//                                     @RequestParam(required = false, defaultValue = "1") Integer pageNo,
-//                                     @RequestParam(required = false, defaultValue = "10") Integer numOfRows) throws IOException {
-//        String targetUrl = String.format(
-//                "http://api.data.go.kr/openapi/tn_pubr_public_cltur_fstvl_api?serviceKey=%s&pageNo=%d&numOfRows=%d&type=json",
-//                serviceKey,
-//                pageNo,
-//                numOfRows
-//        );
-//        response.sendRedirect(targetUrl);
-//    }
-
-
-//    @Value("${publicdata.service-key}")
-//    private String serviceKey; // 디코딩키
-//
-//    private final RestTemplate restTemplate = new RestTemplate();
-//    private final ObjectMapper objectMapper = new ObjectMapper();
-//
-//    @GetMapping("/festivals/summary")
-//    public ResponseEntity<?> getFestivalSummaries(
-//            @RequestParam(defaultValue = "1") Integer pageNo,
-//            @RequestParam(defaultValue = "10") Integer numOfRows) {
-//
-//        // 디코딩키를 URL-encode 해서 붙임(중요!)
-//        String url = "http://api.data.go.kr/openapi/tn_pubr_public_cltur_fstvl_api"
-//                + "?serviceKey=" + URLEncoder.encode(serviceKey.trim(), StandardCharsets.UTF_8)
-//                + "&pageNo=" + pageNo
-//                + "&numOfRows=" + numOfRows
-//                + "&type=json";
-//
-//        try {
-//            String json = restTemplate.getForObject(URI.create(url), String.class);
-//            if (json == null) return ResponseEntity.ok(Collections.emptyList());
-//
-//            JsonNode root = objectMapper.readTree(json);
-//
-//            String resultCode = root.at("/response/header/resultCode").asText("");
-//            if (!"00".equals(resultCode)) {
-//                return ResponseEntity.ok(root);
-//            }
-//
-//            List<FestivalResponse> list = new ArrayList<>();
-//            JsonNode items = root.at("/response/body/items");
-//            if (items.isArray()) {
-//                for (JsonNode it : items) list.add(FestivalResponse.from(it));
-//            } else {
-//                JsonNode itemNode = root.at("/response/body/items/item");
-//                if (itemNode.isArray()) for (JsonNode it : itemNode) list.add(FestivalResponse.from(it));
-//                else if (itemNode.isObject()) list.add(FestivalResponse.from(itemNode));
-//            }
-//            return ResponseEntity.ok(list);
-//        } catch (Exception e) {
-//            return ResponseEntity.status(500).body(Collections.singletonMap("error", e.getMessage()));
-//        }
-//    }
+//    private final FestivalApiService festivalApiService;
 
     private static final Logger log = LoggerFactory.getLogger(FestivalController.class);
 
     @Value("${publicdata.service-key}")
-    private String serviceKey; // 인코딩키(%)든 디코딩키든 아무거나 OK
+    private String serviceKey;
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final JanchiService janchiService;
 
-    @GetMapping("/festivals/summary")
+    @GetMapping("/festivals")
     public ResponseEntity<?> getFestivalSummaries(
             @RequestParam(defaultValue = "1") Integer pageNo,
-            @RequestParam(defaultValue = "50") Integer numOfRows,
-            @RequestParam(defaultValue = "true") boolean onlyThisYear
+            @RequestParam(defaultValue = "100") Integer numOfRows,
+            @RequestParam(defaultValue = "true") boolean onlyThisYear,
+            @RequestParam(defaultValue = "false") boolean save
     ) {
         // 0) 키 준비
         String rawKey = serviceKey == null ? "" : serviceKey.trim();
         if (rawKey.isEmpty()) {
             return ResponseEntity.status(500).body(Map.of("error", "serviceKey is empty"));
         }
-        // 키 자동 처리: %가 있으면 인코딩키 그대로, 없으면 디코딩키로 보고 URL-encode
-        String keyParam = rawKey.contains("%")
-                ? rawKey
-                : URLEncoder.encode(rawKey, StandardCharsets.UTF_8);
+        String keyParam = rawKey.contains("%") ? rawKey : URLEncoder.encode(rawKey, StandardCharsets.UTF_8);
 
-        // 1) 최종 URL (문자열 결합: 재인코딩 방지)
+        // 1) URL
         String url = "http://api.data.go.kr/openapi/tn_pubr_public_cltur_fstvl_api"
                 + "?pageNo=" + pageNo
                 + "&numOfRows=" + numOfRows
                 + "&type=json"
                 + "&serviceKey=" + keyParam;
 
-        // (선택) 로그로 확인—키는 일부만 마스킹
         try {
-            log.debug("PUBLICDATA URL: {}", url.replace(keyParam,
-                    keyParam.substring(0, Math.min(6, keyParam.length())) + "..."));
+            String masked = keyParam.substring(0, Math.min(6, keyParam.length())) + "...";
+            log.debug("PUBLICDATA URL: {}", url.replace(keyParam, masked));
         } catch (Exception ignore) {}
 
         try {
-            // 2) 호출 (URI로 넘겨서 재인코딩 방지)
+            // 2) 호출
             String json = restTemplate.getForObject(URI.create(url), String.class);
             if (json == null) return ResponseEntity.ok(Collections.emptyList());
 
             JsonNode root = objectMapper.readTree(json);
 
-            // 3) 결과 코드 검증
+            // 3) 결과 코드
             String resultCode = root.at("/response/header/resultCode").asText("");
             if (!"00".equals(resultCode)) {
-                return ResponseEntity.ok(root); // 원본 에러 그대로 반환하여 원인 확인
+                return ResponseEntity.ok(root);
             }
 
-            // 4) items 파싱 (배열/단일)
+            // 4) items 파싱
             List<FestivalResponse> list = new ArrayList<>();
             JsonNode items = root.at("/response/body/items");
             if (items.isArray()) {
-                for (JsonNode it : items) list.add(FestivalResponse.from(it));
+                for (JsonNode it : items) {
+                    if (it.has("item")) {
+                        JsonNode inner = it.get("item");
+                        if (inner.isArray()) for (JsonNode x : inner) list.add(FestivalResponse.from(x));
+                        else if (inner.isObject()) list.add(FestivalResponse.from(inner));
+                    } else {
+                        list.add(FestivalResponse.from(it));
+                    }
+                }
             } else {
                 JsonNode itemNode = root.at("/response/body/items/item");
                 if (itemNode.isArray()) for (JsonNode it : itemNode) list.add(FestivalResponse.from(it));
                 else if (itemNode.isObject()) list.add(FestivalResponse.from(itemNode));
             }
 
-            // 5) 올해만 필터 옵션
+            // 5) 필터/정렬
             if (onlyThisYear) {
-                int year = LocalDate.now().getYear();
-                LocalDate yStart = LocalDate.of(year, 1, 1);
-                LocalDate yEnd   = LocalDate.of(year, 12, 31);
+                LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
+                int year = today.getYear();
 
-                list = list.stream()
-                        .filter(f -> {
-                            LocalDate s = parseFlexibleDate(f.getFstvlStartDate());
-                            LocalDate e = parseFlexibleDate(f.getFstvlEndDate());
-                            if (s == null && e == null) return false;
-                            if (s == null) s = e;
-                            if (e == null) e = s;
-                            return !s.isAfter(yEnd) && !e.isBefore(yStart);
-                        })
-                        .sorted(Comparator.comparing(
-                                (FestivalResponse f) -> parseFlexibleDate(f.getFstvlStartDate()),
-                                Comparator.nullsLast(Comparator.naturalOrder())
+                // 한 번만 파싱해서 캐싱
+                record NormFestival(FestivalResponse raw, LocalDate s, LocalDate e) {}
+                List<NormFestival> norm = list.stream()
+                        .map(f -> new NormFestival(
+                                f,
+                                JanchiService.parseDateFirst(f.getFstvlStartDate()),
+                                JanchiService.parseDateLast(f.getFstvlEndDate())
                         ))
                         .toList();
+
+                list = norm.stream()
+                        .filter(n -> {
+                            if (n.s() == null) return false;
+                            boolean upcomingThisYear = (n.s().getYear() == year) && !n.s().isBefore(today);
+                            boolean ongoingNowThisYear = (n.s().getYear() == year) && !n.s().isAfter(today) && (n.e() == null || !n.e().isBefore(today));
+                            return upcomingThisYear || ongoingNowThisYear;
+                        })
+                        .sorted(
+                                Comparator
+                                        .comparingInt((NormFestival n) -> {
+                                            boolean ongoing = (n.s() != null) && !n.s().isAfter(today) && (n.e() == null || !n.e().isBefore(today));
+                                            return ongoing ? 0 : 1; // 진행중 우선
+                                        })
+                                        .thenComparing(NormFestival::s, Comparator.nullsLast(Comparator.naturalOrder()))
+                                        .thenComparing(n -> n.raw().getFstvlNm(), Comparator.nullsLast(String::compareTo))
+                        )
+                        .map(NormFestival::raw)
+                        .toList();
+            }
+
+            // 6) 저장 옵션
+            if (save) {
+                int saved = janchiService.upsertAll(list);
+                Map<String, Object> payload = new LinkedHashMap<>();
+                payload.put("savedCount", saved);
+                payload.put("items", list);
+                return ResponseEntity.ok(payload);
             }
 
             return ResponseEntity.ok(list);
 
         } catch (Exception e) {
+            log.warn("Festival API error", e);
             return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
     }
-
-    // yyyyMMdd 또는 yyyy-MM-dd 모두 허용
-    private static LocalDate parseFlexibleDate(String v) {
-        if (v == null || v.isBlank()) return null;
-        String s = v.trim();
-        try {
-            if (s.matches("\\d{8}")) return LocalDate.parse(s, DateTimeFormatter.BASIC_ISO_DATE);
-            if (s.matches("\\d{4}-\\d{2}-\\d{2}")) return LocalDate.parse(s);
-        } catch (DateTimeParseException ignored) {}
-        return null;
-    }
-
 }
