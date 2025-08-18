@@ -1,5 +1,6 @@
 package com.springboot.janchi.review.entity;
 
+import com.springboot.janchi.janchi.entity.Janchi;
 import com.springboot.janchi.review.dto.ReviewResponseDto;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,6 +27,9 @@ public class Review {
     private Integer star;
     private Date createDate;
     private String content;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Janchi janchi;
 
 
 }

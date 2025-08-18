@@ -46,9 +46,20 @@ public class ReviewController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/avgStar")
-    public ResponseEntity<Double> getAverageStar(){
-        return ResponseEntity.ok(reviewService.getAverageStar());
+// 전체 평균 구하기
+//    @GetMapping("/avgStar")
+//    public ResponseEntity<Double> getAverageStar(){
+//        return ResponseEntity.ok(reviewService.getAverageStar());
+//    }
+
+    @GetMapping("review/janchi/{festivalId}")
+    public ResponseEntity<List<ReviewResponseDto>> getByFestival(@PathVariable Long festivalId) {
+        return ResponseEntity.ok(reviewService.getReviewsByFestival(festivalId));
+    }
+
+    @GetMapping("review/janchi/avg-star/{festivalId}")
+    public ResponseEntity<Double> getAvgStar(@PathVariable Long festivalId) {
+        return ResponseEntity.ok(reviewService.getAvgStarByFestival(festivalId));
     }
 
 }

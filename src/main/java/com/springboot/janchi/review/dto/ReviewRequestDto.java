@@ -11,4 +11,6 @@ public class ReviewRequestDto {
     private String content;
     private Integer star;
 
+    private Long janchiId;
+
 }

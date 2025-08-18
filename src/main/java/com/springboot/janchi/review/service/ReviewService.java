@@ -1,5 +1,7 @@
 package com.springboot.janchi.review.service;
 
+import com.springboot.janchi.janchi.entity.Janchi;
+import com.springboot.janchi.janchi.repository.JanchiRepository;
 import com.springboot.janchi.review.dto.ReviewRequestDto;
 import com.springboot.janchi.review.dto.ReviewResponseDto;
 import com.springboot.janchi.review.entity.Review;
@@ -16,9 +18,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ReviewService {
     private final ReviewRepository reviewRepository;
+    private final JanchiRepository janchiRepository;
 
     public ReviewResponseDto createReview(ReviewRequestDto dto) {
+        Janchi janchi = janchiRepository.findById(dto.getJanchiId())
+                .orElseThrow(() -> new RuntimeException("[error] 잔치를 찾을 수 없습니다."));
+
         Review review = Review.builder()
+                .janchi(janchi)
                 .userId(dto.getUserId())
                 .password(dto.getPassword())
                 .star(dto.getStar())
@@ -66,8 +73,29 @@ public class ReviewService {
         reviewRepository.delete(review);
     }
 
+    // 전체 평균 평점
     public Double getAverageStar(){
         Double avg = reviewRepository.findAverageStar();
+        return avg != null ? avg : 0.0;
+    }
+
+    // 축제별 리뷰 조회
+    public List<ReviewResponseDto> getReviewsByFestival(Long id) {
+        Janchi janchi = janchiRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Festival not found"));
+
+        return reviewRepository.findByJanchi(janchi)
+                .stream()
+                .map(r -> new ReviewResponseDto(r.getId(), r.getUserId(), r.getStar(), r.getContent(), r.getCreateDate()))
+                .collect(Collectors.toList());
+    }
+
+    // 축제별 평균 별점
+    public Double getAvgStarByFestival(Long festivalId) {
+        Janchi janchi = janchiRepository.findById(festivalId)
+                .orElseThrow(() -> new RuntimeException("Festival not found"));
+
+        Double avg = reviewRepository.findAvgStarByFestival(janchi);
         return avg != null ? avg : 0.0;
     }
 }

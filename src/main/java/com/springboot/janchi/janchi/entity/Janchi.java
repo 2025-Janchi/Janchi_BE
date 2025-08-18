@@ -1,9 +1,12 @@
 package com.springboot.janchi.janchi.entity;
 
+import com.springboot.janchi.review.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(
@@ -72,4 +75,7 @@ public class Janchi {
 
     @Column(name = "reference_date")
     private LocalDate referenceDate;
+
+    @OneToMany(mappedBy = "janchi", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Review> reviews = new ArrayList<>();
 }
