@@ -1,11 +1,9 @@
 package com.springboot.janchi.event.controller;
 
-import com.springboot.janchi.event.dto.EventResponseDto;
-import com.springboot.janchi.event.dto.FormListDto;
-import com.springboot.janchi.event.dto.FormRequestDto;
-import com.springboot.janchi.event.dto.FormResponseDto;
+import com.springboot.janchi.event.dto.*;
 import com.springboot.janchi.event.service.EventFormService;
 import com.springboot.janchi.event.service.EventService;
+import com.springboot.janchi.event.service.EventWinnerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +17,12 @@ import java.util.List;
 public class EventController {
     private final EventService eventService;
     private final EventFormService formService;
+    private final EventWinnerService eventWinnerService;
 
     // 활성 이벤트 목록
     @GetMapping
     public ResponseEntity<List<EventResponseDto>> list() {
-        return ResponseEntity.ok(eventService.listActive());
+        return ResponseEntity.ok(eventService.listAll());
     }
 
     // 이벤트 조회
@@ -44,4 +43,16 @@ public class EventController {
     public ResponseEntity<List<FormListDto>> listForms(@PathVariable Long eventId) {
         return ResponseEntity.ok(eventService.listFormsByEvent(eventId));
     }
+
+    // 당첨자 발표 (자동 추첨)
+    @GetMapping("/{eventId}/winners")
+    public ResponseEntity<?> listWinners(@PathVariable Long eventId,
+                                         @RequestParam(defaultValue = "1") int count) {
+        try {
+            return ResponseEntity.ok(eventWinnerService.getOrPickWinners(eventId, count));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(403).body("당첨자 발표 기간이 아닙니다.");
+        }
+    }
+
 }
