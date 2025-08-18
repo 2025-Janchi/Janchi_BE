@@ -1,6 +1,7 @@
 package com.springboot.janchi.festival.service;
 
 import com.springboot.janchi.festival.dto.FestivalResponse;
+import com.springboot.janchi.festival.dto.JanchiDetailDto;
 import com.springboot.janchi.festival.entity.Janchi;
 import com.springboot.janchi.festival.repository.JanchiRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -119,5 +121,55 @@ public class JanchiService {
             janchiRepository.saveAll(toSave);
         }
         return toSave.size();
+    }
+
+    @Transactional(readOnly = true)
+    public JanchiDetailDto getDetail(Long id) {
+        Janchi f = janchiRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("축제를 찾을 수 없습니다. id=" + id));
+
+        // 파생값 계산
+        var tz = ZoneId.of("Asia/Seoul");
+        var today = java.time.LocalDate.now(tz);
+        var s = f.getStartDate();
+        var e = f.getEndDate() != null ? f.getEndDate() : f.getStartDate();
+
+        boolean ongoing = false;
+        Integer dday = null;
+        Integer duration = null;
+
+        if (s != null) {
+            if (e == null) e = s;
+            ongoing = !s.isAfter(today) && !e.isBefore(today);  // s ≤ today ≤ e
+            if (ongoing) {
+                dday = 0;
+            } else if (today.isBefore(s)) {
+                dday = (int) (s.toEpochDay() - today.toEpochDay());
+            }
+            duration = (int) (e.toEpochDay() - s.toEpochDay()) + 1;
+        }
+
+        return JanchiDetailDto.builder()
+                .id(f.getId())
+                .fstvlNm(f.getFstvlNm())
+                .opar(f.getOpar())
+                .startDate(f.getStartDate())
+                .endDate(f.getEndDate())
+                .fstvlCo(f.getFstvlCo())
+                .mnnstNm(f.getMnnstNm())
+                .auspcInsttNm(f.getAuspcInsttNm())
+                .suprtInsttNm(f.getSuprtInsttNm())
+                .phoneNumber(f.getPhoneNumber())
+                .homepageUrl(f.getHomepageUrl())
+                .relateInfo(f.getRelateInfo())
+                .rdnmadr(f.getRdnmadr())
+                .lnmadr(f.getLnmadr())
+                .latitude(f.getLatitude())
+                .longitude(f.getLongitude())
+                .referenceDate(f.getReferenceDate())
+                .ongoing(ongoing)
+                .dday(dday)
+                .duration(duration)
+                .build();
     }
 }
