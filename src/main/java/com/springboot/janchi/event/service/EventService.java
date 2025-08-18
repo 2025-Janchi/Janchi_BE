@@ -19,29 +19,23 @@ public class EventService {
     private final EventRepository eventRepository;
     private final EventFormRepository eventFormRepository;
 
-    public List<EventResponseDto> listActive() {
-        return eventRepository.findByActiveTrueOrderByStartAtAsc()
-                .stream()
+    // 모든 이벤트 조회
+    public List<EventResponseDto> listAll() {
+        return eventRepository.findAll().stream()
                 .map(this::toDto)
                 .toList();
     }
 
+    // 단건 조회
     public EventResponseDto getOne(Long eventId) {
         Event e = eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("이벤트가 존재하지 않습니다."));
-        if (!e.isActive()) {
-            throw new IllegalStateException("비활성화된 이벤트입니다.");
-        }
         return toDto(e);
     }
 
     public Event getEntityOrThrow(Long eventId) {
-        Event e = eventRepository.findById(eventId)
+        return eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("이벤트가 존재하지 않습니다."));
-        if (!e.isActive()) {
-            throw new IllegalStateException("비활성화된 이벤트입니다.");
-        }
-        return e;
     }
 
     private EventResponseDto toDto(Event e) {
@@ -55,8 +49,8 @@ public class EventService {
                 .active(e.isActive())
                 .build();
     }
+
     public List<FormListDto> listFormsByEvent(Long eventId) {
-        // 이벤트 존재/활성 확인
         getEntityOrThrow(eventId);
 
         return eventFormRepository.findByEventIdOrderByCreatedAtDesc(eventId)

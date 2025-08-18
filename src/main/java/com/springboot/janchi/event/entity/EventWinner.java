@@ -6,13 +6,13 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "form")
+@Table(name = "event_winner")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class EventForm {
+public class EventWinner {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,26 +21,16 @@ public class EventForm {
     @JoinColumn(name = "event_id")
     private Event event;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "form_id")
+    private EventForm form;
+
     @Column(nullable = false, length = 60)
     private String name;
 
-    @Column(nullable = false, length = 120)
-    private String email;
-
-    @Column(nullable = false, length = 30)
-    private String phone;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
-    private AgeGroup ageGroup;
-
-    @Column(nullable = false, length = 255)
-    private String address;
+    @Column(nullable = false, length = 4)
+    private String phoneLast4;
 
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
-
-    public enum AgeGroup {
-        AGE_10S, AGE_20S, AGE_30S, AGE_40S, AGE_50S_PLUS
-    }
 }
