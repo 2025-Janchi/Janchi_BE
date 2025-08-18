@@ -1,10 +1,10 @@
-package com.springboot.janchi.festival.controller;
+package com.springboot.janchi.janchi.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springboot.janchi.festival.dto.FestivalResponse;
-import com.springboot.janchi.festival.dto.JanchiDetailDto;
-import com.springboot.janchi.festival.service.JanchiService;
+import com.springboot.janchi.janchi.dto.JanchiResponse;
+import com.springboot.janchi.janchi.dto.JanchiDetailDto;
+import com.springboot.janchi.janchi.service.JanchiService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,10 +23,10 @@ import java.util.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
-public class FestivalController {
+public class JanchiController {
 //    private final FestivalApiService festivalApiService;
 
-    private static final Logger log = LoggerFactory.getLogger(FestivalController.class);
+    private static final Logger log = LoggerFactory.getLogger(JanchiController.class);
 
     @Value("${publicdata.service-key}")
     private String serviceKey;
@@ -35,7 +35,7 @@ public class FestivalController {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final JanchiService janchiService;
 
-    @GetMapping("/festivals")
+    @GetMapping("/janchis")
     public ResponseEntity<?> getFestivalSummaries(
             @RequestParam(defaultValue = "1") Integer pageNo,
             @RequestParam(defaultValue = "100") Integer numOfRows,
@@ -75,22 +75,22 @@ public class FestivalController {
             }
 
             // 4) items 파싱
-            List<FestivalResponse> list = new ArrayList<>();
+            List<JanchiResponse> list = new ArrayList<>();
             JsonNode items = root.at("/response/body/items");
             if (items.isArray()) {
                 for (JsonNode it : items) {
                     if (it.has("item")) {
                         JsonNode inner = it.get("item");
-                        if (inner.isArray()) for (JsonNode x : inner) list.add(FestivalResponse.from(x));
-                        else if (inner.isObject()) list.add(FestivalResponse.from(inner));
+                        if (inner.isArray()) for (JsonNode x : inner) list.add(JanchiResponse.from(x));
+                        else if (inner.isObject()) list.add(JanchiResponse.from(inner));
                     } else {
-                        list.add(FestivalResponse.from(it));
+                        list.add(JanchiResponse.from(it));
                     }
                 }
             } else {
                 JsonNode itemNode = root.at("/response/body/items/item");
-                if (itemNode.isArray()) for (JsonNode it : itemNode) list.add(FestivalResponse.from(it));
-                else if (itemNode.isObject()) list.add(FestivalResponse.from(itemNode));
+                if (itemNode.isArray()) for (JsonNode it : itemNode) list.add(JanchiResponse.from(it));
+                else if (itemNode.isObject()) list.add(JanchiResponse.from(itemNode));
             }
 
             // 5) 필터/정렬
@@ -99,7 +99,7 @@ public class FestivalController {
                 int year = today.getYear();
 
                 // 한 번만 파싱해서 캐싱
-                record NormFestival(FestivalResponse raw, LocalDate s, LocalDate e) {}
+                record NormFestival(JanchiResponse raw, LocalDate s, LocalDate e) {}
                 List<NormFestival> norm = list.stream()
                         .map(f -> new NormFestival(
                                 f,
@@ -130,12 +130,13 @@ public class FestivalController {
 
             // 6) 저장 옵션
             if (save) {
-                int saved = janchiService.upsertAll(list);
+                List<JanchiResponse> withIds = janchiService.upsertAllAndAttachIds(list);
                 Map<String, Object> payload = new LinkedHashMap<>();
-                payload.put("savedCount", saved);
-                payload.put("items", list);
+                payload.put("savedCount", withIds.size());
+                payload.put("items", withIds);
                 return ResponseEntity.ok(payload);
             }
+
 
             return ResponseEntity.ok(list);
 

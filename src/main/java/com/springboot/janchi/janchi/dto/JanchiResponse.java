@@ -1,4 +1,4 @@
-package com.springboot.janchi.festival.dto;
+package com.springboot.janchi.janchi.dto;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FestivalResponse {
+public class JanchiResponse {
+    private Long id;
     private String fstvlNm;        // 축제명
     private String opar;       // 개최장소
     private String fstvlStartDate;   // 축제시작일자
@@ -26,8 +27,9 @@ public class FestivalResponse {
     private Double longitude;   // 경도
     private String referenceDate;  //데이터기준일자
 
-    public static FestivalResponse from(JsonNode it) {
-        return new FestivalResponse(
+    public static JanchiResponse from(JsonNode it) {
+        return new JanchiResponse(
+                null,
                 it.path("fstvlNm").asText(null),
                 it.path("opar").asText(null),
                 it.path("fstvlStartDate").asText(null),

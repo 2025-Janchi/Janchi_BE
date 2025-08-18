@@ -1,4 +1,4 @@
-package com.springboot.janchi.festival.dto;
+package com.springboot.janchi.janchi.dto;
 
 import lombok.Builder;
 import lombok.Data;

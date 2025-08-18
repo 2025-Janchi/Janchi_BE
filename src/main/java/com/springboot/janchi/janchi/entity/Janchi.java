@@ -1,4 +1,4 @@
-package com.springboot.janchi.festival.entity;
+package com.springboot.janchi.janchi.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

@@ -1,4 +1,4 @@
-package com.springboot.janchi.festival.config;
+package com.springboot.janchi.janchi.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

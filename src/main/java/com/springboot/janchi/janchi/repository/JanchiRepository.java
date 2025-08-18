@@ -1,6 +1,6 @@
-package com.springboot.janchi.festival.repository;
+package com.springboot.janchi.janchi.repository;
 
-import com.springboot.janchi.festival.entity.Janchi;
+import com.springboot.janchi.janchi.entity.Janchi;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
