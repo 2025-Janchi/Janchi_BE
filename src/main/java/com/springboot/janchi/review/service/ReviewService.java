@@ -52,8 +52,8 @@ public class ReviewService {
     }
 
     // 리뷰 수정
-    public ReviewResponseDto updateReview(Long id, String userId, String password, ReviewRequestDto dto) {
-        Review review = reviewRepository.findByIdAndUserIdAndPassword(id, userId, password)
+    public ReviewResponseDto updateReview(Long id, String password, ReviewRequestDto dto) {
+        Review review = reviewRepository.findByIdAndPassword(id, password)
                 .orElseThrow(() -> new IllegalArgumentException("리뷰를 수정할 권한이 없습니다."));
 
         review.setContent(dto.getContent());
@@ -66,8 +66,8 @@ public class ReviewService {
     }
 
     // 리뷰 삭제
-    public void deleteReview(Long id, String userId, String password) {
-        Review review = reviewRepository.findByIdAndUserIdAndPassword(id, userId, password)
+    public void deleteReview(Long id, String password) {
+        Review review = reviewRepository.findByIdAndPassword(id, password)
                 .orElseThrow(() -> new IllegalArgumentException("리뷰를 삭제할 권한이 없습니다."));
 
         reviewRepository.delete(review);

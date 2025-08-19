@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-    Optional<Review> findByIdAndUserIdAndPassword(Long id, String userId, String password);
+    Optional<Review> findByIdAndPassword(Long id, String password);
     List<Review> findByJanchi(Janchi janchi);
     // 별점 조회
     @Query("SELECT AVG (r.star) FROM Review r")
