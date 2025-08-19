@@ -31,18 +31,16 @@ public class ReviewController {
     @PutMapping("/update/{id}")
     public ResponseEntity<ReviewResponseDto> update(
             @PathVariable Long id,
-            @RequestParam String userId,
             @RequestParam String password,
             @RequestBody ReviewRequestDto dto) {
-        return ResponseEntity.ok(reviewService.updateReview(id, userId, password, dto));
+        return ResponseEntity.ok(reviewService.updateReview(id, password, dto));
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> delete(
             @PathVariable Long id,
-            @RequestParam String userId,
             @RequestParam String password) {
-        reviewService.deleteReview(id, userId, password);
+        reviewService.deleteReview(id, password);
         return ResponseEntity.ok().build();
     }
 
