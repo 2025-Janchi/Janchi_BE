@@ -1,10 +1,13 @@
 package com.springboot.janchi.janchi.service;
 
+import com.fasterxml.jackson.core.PrettyPrinter;
+import com.springboot.janchi.janchi.dto.JanchiMapDto;
 import com.springboot.janchi.janchi.dto.JanchiResponse;
 import com.springboot.janchi.janchi.dto.JanchiDetailDto;
 import com.springboot.janchi.janchi.entity.Janchi;
 import com.springboot.janchi.janchi.repository.JanchiRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,11 +17,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class JanchiService {
     private final JanchiRepository janchiRepository;
+
 
     // yyyy-MM-dd, yyyy.MM.dd, yyyy/MM/dd, yyyy년 MM월 dd일, "yyyy-MM-dd ~ yyyy-MM-dd" 등 폭넓게 지원
     private static final Pattern DATE_ANY_PATTERN = Pattern.compile("(\\d{4})\\D?(\\d{1,2})\\D?(\\d{1,2})");
@@ -232,6 +237,5 @@ public class JanchiService {
                 .duration(duration)
                 .build();
     }
-
 
 }

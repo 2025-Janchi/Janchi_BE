@@ -2,6 +2,7 @@ package com.springboot.janchi.janchi.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springboot.janchi.janchi.dto.JanchiMapDto;
 import com.springboot.janchi.janchi.dto.JanchiResponse;
 import com.springboot.janchi.janchi.dto.JanchiDetailDto;
 import com.springboot.janchi.janchi.service.JanchiService;
@@ -59,7 +60,8 @@ public class JanchiController {
         try {
             String masked = keyParam.substring(0, Math.min(6, keyParam.length())) + "...";
             log.debug("PUBLICDATA URL: {}", url.replace(keyParam, masked));
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
 
         try {
             // 2) 호출
@@ -99,7 +101,8 @@ public class JanchiController {
                 int year = today.getYear();
 
                 // 한 번만 파싱해서 캐싱
-                record NormFestival(JanchiResponse raw, LocalDate s, LocalDate e) {}
+                record NormFestival(JanchiResponse raw, LocalDate s, LocalDate e) {
+                }
                 List<NormFestival> norm = list.stream()
                         .map(f -> new NormFestival(
                                 f,
@@ -153,8 +156,59 @@ public class JanchiController {
             return ResponseEntity.ok(dto);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(404).body(
-                    java.util.Map.of("error","NOT_FOUND","message", e.getMessage())
+                    java.util.Map.of("error", "NOT_FOUND", "message", e.getMessage())
             );
         }
     }
+
+    // 위도 경도
+    @GetMapping("/janchi/map")
+    public ResponseEntity<?> getJanchiMapInfo(
+            @RequestParam(defaultValue = "1") Integer pageNo,
+            @RequestParam(defaultValue = "100") Integer numOfRows
+    ) {
+        try {
+            // 기존 외부 API 호출 코드 재사용
+            String url = "http://api.data.go.kr/openapi/tn_pubr_public_cltur_fstvl_api"
+                    + "?pageNo=" + pageNo
+                    + "&numOfRows=" + numOfRows
+                    + "&type=json"
+                    + "&serviceKey=" + URLEncoder.encode(serviceKey, StandardCharsets.UTF_8);
+
+            String json = restTemplate.getForObject(URI.create(url), String.class);
+            if (json == null) return ResponseEntity.ok(Collections.emptyList());
+
+            JsonNode root = objectMapper.readTree(json);
+            JsonNode items = root.at("/response/body/items");
+
+            List<JanchiResponse> list = new ArrayList<>();
+            if (items.isArray()) {
+                for (JsonNode it : items) {
+                    if (it.has("item")) {
+                        JsonNode inner = it.get("item");
+                        if (inner.isArray()) for (JsonNode x : inner) list.add(JanchiResponse.from(x));
+                        else if (inner.isObject()) list.add(JanchiResponse.from(inner));
+                    } else {
+                        list.add(JanchiResponse.from(it));
+                    }
+                }
+            }
+
+            List<JanchiMapDto> mapDtos = list.stream()
+                    .map(f -> new JanchiMapDto(
+                            f.getRdnmadr(),
+                            f.getLnmadr(),
+                            f.getLatitude(),
+                            f.getLongitude()))
+                    .toList();
+
+            return ResponseEntity.ok(mapDtos);
+
+        } catch (Exception e) {
+            log.warn("Festival Map API error", e);
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
 }
+
+
