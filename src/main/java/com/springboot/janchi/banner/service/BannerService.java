@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -45,21 +44,20 @@ public class BannerService {
                     너는 한국 여행 홍보 전문가야. 
                     아래 잔치를 홍보하기 위한 배너 문구를 만들어줘.
                     조건:
-                    - 1문장으로 간결하게
-                    - 재미있고 시선을 끄는 문구
-                    - 반드시 축제명, 종료일, 축제 내용 요약 포함
+                    - 간결하게, 아주 짧게
+                    - 재미있고 시선을 끄는 문구 (이모티콘 사용 금지)
+                    - 반드시 축제 내용 요약 포함
                     - JSON 형식으로만 반환:
                     {
-                      "banner": "<배너문구>"
+                      "banner1": "<배너문구>",
+                      "banner2": "<배너문구>"
                     }
 
                     축제 정보:
                     - 이름: %s
-                    - 종료일: %s
                     - 내용: %s
                 """.formatted(
                 j.getFstvlNm(),
-                j.getEndDate(),
                 nz(j.getFstvlCo())
         );
 
@@ -80,11 +78,13 @@ public class BannerService {
         json = extractJson(json);
 
         Map<String, String> map = om.readValue(json, new TypeReference<>() {});
-        String bannerText = map.getOrDefault("banner", "");
+        String banner1 = map.getOrDefault("banner1", "");
+        String banner2 = map.getOrDefault("banner2", "");
 
         return BannerResponseDto.builder()
                 .id(janchiId)
-                .banner(bannerText)
+                .banner1(banner1)
+                .banner2(banner2)
                 .build();
     }
 
