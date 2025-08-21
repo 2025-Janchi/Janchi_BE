@@ -144,7 +144,6 @@ public class JanchiRecommendService {
                             .reason(String.valueOf(p.getOrDefault("reason", "")))
                             .fstvlStartDate(j.getStartDate() != null ? j.getStartDate().toString() : null)
                             .fstvlEndDate(j.getEndDate() != null ? j.getEndDate().toString() : null)
-                            .keywords(keywords)
                             .build());
                 }
             }
@@ -164,7 +163,7 @@ public class JanchiRecommendService {
                             .build());
                 }
             }
-            return RecommendationResponseDto.builder().items(out).build();
+            return RecommendationResponseDto.builder().items(out).keywords(keywords).build();
 
         } catch (Exception e) {
             // 실패 시 fallback
