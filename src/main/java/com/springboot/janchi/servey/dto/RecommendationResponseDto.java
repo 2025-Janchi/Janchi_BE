@@ -18,5 +18,9 @@ public class RecommendationResponseDto {
         private String name;
         private String reason;
         private String imageUrl;
+        private String fstvlStartDate;
+        private String fstvlEndDate;
+        private List<String> keywords;
+
     }
 }

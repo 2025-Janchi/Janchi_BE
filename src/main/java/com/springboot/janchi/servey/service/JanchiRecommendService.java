@@ -96,7 +96,9 @@ public class JanchiRecommendService {
             {"id": <number>, "reason": "<한줄이유>"},
             {"id": <number>, "reason": "<한줄이유>"},
             {"id": <number>, "reason": "<한줄이유>"}
-          ]}
+          ],
+          "keywords": ["키워드1", "키워드2", "키워드3"]
+          }
         """.formatted(
                 nz(req.getPeopleCount()), nz(req.getCompanion()),
                 nz(req.getDuration()), nz(req.getRegion()),
@@ -128,6 +130,8 @@ public class JanchiRecommendService {
             List<Map<String, Object>> picks =
                     (List<Map<String, Object>>) root.getOrDefault("items", List.of());
 
+            List<String> keywords = (List<String>) root.getOrDefault("keywords", List.of());
+
             List<RecommendationResponseDto.Item> out = new ArrayList<>();
             for (Map<String, Object> p : picks) {
                 Long id = toLong(p.get("id"));
@@ -138,6 +142,9 @@ public class JanchiRecommendService {
                             .name(j.getFstvlNm())
                             .imageUrl(null)
                             .reason(String.valueOf(p.getOrDefault("reason", "")))
+                            .fstvlStartDate(j.getStartDate() != null ? j.getStartDate().toString() : null)
+                            .fstvlEndDate(j.getEndDate() != null ? j.getEndDate().toString() : null)
+                            .keywords(keywords)
                             .build());
                 }
             }
@@ -152,6 +159,8 @@ public class JanchiRecommendService {
                             .name(ws.j().getFstvlNm())
                             .imageUrl(null)
                             .reason("스코어 상위 보정")
+                            .fstvlStartDate(ws.j().getStartDate() != null ? ws.j().getStartDate().toString() : null)
+                            .fstvlEndDate(ws.j().getEndDate() != null ? ws.j().getEndDate().toString() : null)
                             .build());
                 }
             }
@@ -165,6 +174,8 @@ public class JanchiRecommendService {
                             .name(ws.j().getFstvlNm())
                             .imageUrl(null)
                             .reason("모델 응답 오류로 스코어 상위 추천")
+                            .fstvlStartDate(ws.j().getStartDate() != null ? ws.j().getStartDate().toString() : null)
+                            .fstvlEndDate(ws.j().getEndDate() != null ? ws.j().getEndDate().toString() : null)
                             .build())
                     .toList();
             return RecommendationResponseDto.builder().items(out).build();
@@ -214,11 +225,10 @@ public class JanchiRecommendService {
     private static String extractJson(String s) {
         if (s == null) return "";
         String t = s.trim();
-        if (t.startsWith("```")) {
-            int i = t.indexOf('{');
-            int j = t.lastIndexOf('}');
-            if (i >= 0 && j >= 0 && j > i) return t.substring(i, j + 1);
-        }
+        t = t.replaceAll("```json", "").replaceAll("```", "").trim();
+        int i = t.indexOf('{');
+        int j = t.lastIndexOf('}');
+        if (i >= 0 && j >= 0 && j > i) return t.substring(i, j + 1);
         return t;
     }
 }
