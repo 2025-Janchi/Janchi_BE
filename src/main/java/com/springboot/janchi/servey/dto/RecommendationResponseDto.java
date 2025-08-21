@@ -1,0 +1,22 @@
+package com.springboot.janchi.servey.dto;
+
+import lombok.*;
+
+import java.util.List;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class RecommendationResponseDto {
+    private List<Item> items;
+
+    @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+    public static class Item {
+        private Long id;
+        private String name;
+        private String reason;
+        private String imageUrl;
+    }
+}
