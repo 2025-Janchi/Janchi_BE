@@ -24,4 +24,12 @@ public class GeminiResDto {
     public static class Part {
         private String text;
     }
+
+    public String getFirstText() {
+        if (candidates == null || candidates.isEmpty()) return null;
+        Candidate c = candidates.get(0);
+        if (c.getContent() == null || c.getContent().getParts() == null || c.getContent().getParts().isEmpty())
+            return null;
+        return c.getContent().getParts().get(0).getText();
+    }
 }
