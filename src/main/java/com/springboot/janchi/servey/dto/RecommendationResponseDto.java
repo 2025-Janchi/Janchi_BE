@@ -11,6 +11,7 @@ import java.util.List;
 @Builder
 public class RecommendationResponseDto {
     private List<Item> items;
+    private List<String> keywords;
 
     @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
     public static class Item {
@@ -20,7 +21,6 @@ public class RecommendationResponseDto {
         private String imageUrl;
         private String fstvlStartDate;
         private String fstvlEndDate;
-        private List<String> keywords;
 
     }
 }

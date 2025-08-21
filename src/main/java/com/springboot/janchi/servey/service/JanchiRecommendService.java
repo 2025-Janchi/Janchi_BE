@@ -80,6 +80,8 @@ public class JanchiRecommendService {
         String prompt = """
           너는 여행 플래너야. 설문과 '앞으로 열릴 잔치' 후보 목록(최대 12개) 중 **정확히 3개**를 골라.
           각 선택 이유는 한 줄로.
+          
+          추가로, 선택된 3개 잔치를 전체적으로 대표할 **공동 키워드 3개**를 뽑아.
 
           설문:
           - 인원수: %s
@@ -144,7 +146,6 @@ public class JanchiRecommendService {
                             .reason(String.valueOf(p.getOrDefault("reason", "")))
                             .fstvlStartDate(j.getStartDate() != null ? j.getStartDate().toString() : null)
                             .fstvlEndDate(j.getEndDate() != null ? j.getEndDate().toString() : null)
-                            .keywords(keywords)
                             .build());
                 }
             }
@@ -164,7 +165,7 @@ public class JanchiRecommendService {
                             .build());
                 }
             }
-            return RecommendationResponseDto.builder().items(out).build();
+            return RecommendationResponseDto.builder().items(out).keywords(keywords).build();
 
         } catch (Exception e) {
             // 실패 시 fallback
