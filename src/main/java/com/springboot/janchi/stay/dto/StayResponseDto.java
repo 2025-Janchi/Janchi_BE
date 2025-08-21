@@ -85,6 +85,8 @@ public class StayResponseDto {
         private String tel;
         private String firstimage;
         private String firstimage2;
+        private String mapx;
+        private String mapy;
 
         public StayDetailResponseDto(Stay stay) {
             this.contentid = stay.getContentid();
@@ -94,6 +96,8 @@ public class StayResponseDto {
             this.tel = stay.getTel();
             this.firstimage = stay.getFirstimage();
             this.firstimage2 = stay.getFirstimage2();
+            this.mapx = stay.getMapX();
+            this.mapy = stay.getMapY();
         }
     }
 
