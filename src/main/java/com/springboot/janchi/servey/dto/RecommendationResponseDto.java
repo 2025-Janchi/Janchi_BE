@@ -21,7 +21,5 @@ public class RecommendationResponseDto {
         private String imageUrl;
         private String fstvlStartDate;
         private String fstvlEndDate;
-        private List<String> keywords;
-
     }
 }
