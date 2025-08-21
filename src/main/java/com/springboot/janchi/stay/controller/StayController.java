@@ -4,19 +4,18 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.janchi.area.dto.AreaResponseDto;
 import com.springboot.janchi.area.entity.Area;
+import com.springboot.janchi.janchi.dto.JanchiDetailDto;
 import com.springboot.janchi.stay.dto.StayMapDto;
 import com.springboot.janchi.stay.dto.StayResponseDto;
 import com.springboot.janchi.stay.entity.Stay;
 import com.springboot.janchi.stay.repository.StayRepository;
+import com.springboot.janchi.stay.service.StayService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -32,10 +31,12 @@ public class StayController {
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     private final StayRepository stayRepository;
+    private final StayService stayService;
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Value("${area.api.encoding.key}")
     private String serviceKey;
+
 
     @GetMapping("/stay")
     public ResponseEntity<List<StayResponseDto.StayResponse.StayItem>> redirectToStayApi(
@@ -86,6 +87,7 @@ public class StayController {
         return ResponseEntity.ok(items);
     }
 
+
     @GetMapping("/stay/map")
     public ResponseEntity<List<StayMapDto>> getStayMapOnly(
             @RequestParam(defaultValue = "O") String arrange,
@@ -130,6 +132,20 @@ public class StayController {
 
         return ResponseEntity.ok(mapDtos);
     }
+
+    @GetMapping("/stay/{id}")
+    public ResponseEntity<?> getDetail(@PathVariable Long id) {
+        try {
+            StayResponseDto.StayDetailResponseDto stayResponseDto = stayService.getStayDetail(id);
+            return ResponseEntity.ok(stayResponseDto);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(
+                    java.util.Map.of("error", "NOT_FOUND", "message", e.getMessage())
+            );
+        }
+    }
+
+
 
 
 }

@@ -3,6 +3,7 @@ package com.springboot.janchi.stay.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.springboot.janchi.stay.entity.Stay;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -74,4 +75,26 @@ public class StayResponseDto {
             private String mapy;
         }
     }
+    @Data
+    @NoArgsConstructor
+    public static class StayDetailResponseDto {
+        private String contentid;
+        private String name;
+        private String addr1;
+        private String addr2;
+        private String tel;
+        private String firstimage;
+        private String firstimage2;
+
+        public StayDetailResponseDto(Stay stay) {
+            this.contentid = stay.getContentid();
+            this.name = stay.getTitle();
+            this.addr1 = stay.getAddr1();
+            this.addr2 = stay.getAddr2();
+            this.tel = stay.getTel();
+            this.firstimage = stay.getFirstimage();
+            this.firstimage2 = stay.getFirstimage2();
+        }
+    }
+
 }

@@ -25,4 +25,11 @@ public class StayService {
         return entities.size();
 
     }
+    public StayResponseDto.StayDetailResponseDto getStayDetail(Long id) {
+        Stay stay = stayRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 숙소가 존재하지 않습니다. id=" + id));
+
+        return new StayResponseDto.StayDetailResponseDto(stay);
+    }
+
 }

@@ -39,11 +39,11 @@ public class Stay {
 
     // 이미지 원본
     @Column(name = "image_url")
-    private String imageUrl;
+    private String firstimage;
 
     // 썸네일
     @Column(name = "image_thumb_url")
-    private String imageThumbUrl;
+    private String firstimage2;
 
     // 좌표
     @Column(name = "map_x", precision = 15, scale = 8)
@@ -64,8 +64,8 @@ public class Stay {
                 .addr2(i.getAddr2())
                 .areaCode(i.getAreaCode())
                 //.sigunguCode(i.getSigungucode())
-                .imageUrl(i.getFirstimage())       // 원본
-                .imageThumbUrl(i.getFirstimage2()) // 썸네일
+                .firstimage(i.getFirstimage())       // 원본
+                .firstimage2(i.getFirstimage2()) // 썸네일
                 .mapX(i.getMapx())
                 .mapY(i.getMapy())
                 .tel(i.getTel())
