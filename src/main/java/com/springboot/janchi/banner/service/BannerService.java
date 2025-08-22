@@ -2,6 +2,8 @@ package com.springboot.janchi.banner.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springboot.janchi.banner.entity.Banner;
+import com.springboot.janchi.banner.repository.BannerRepository;
 import com.springboot.janchi.janchi.entity.Janchi;
 import com.springboot.janchi.janchi.repository.JanchiRepository;
 import com.springboot.janchi.banner.dto.BannerResponseDto;
@@ -19,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -29,6 +33,7 @@ import java.util.regex.Pattern;
 public class BannerService {
 
     private final JanchiRepository janchiRepository;
+    private final BannerRepository bannerRepository;
     private final ObjectMapper om = new ObjectMapper();
     private final RestTemplate geminiRestTemplate;
 
@@ -63,6 +68,7 @@ public class BannerService {
 
         String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + geminiApiKey;
         GeminiReqDto body = GeminiReqDto.ofPrompt(prompt);
+        List<BannerResponseDto> toSave = new ArrayList<>();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -80,6 +86,14 @@ public class BannerService {
         Map<String, String> map = om.readValue(json, new TypeReference<>() {});
         String banner1 = map.getOrDefault("banner1", "");
         String banner2 = map.getOrDefault("banner2", "");
+
+        Banner banner = Banner.builder()
+                .banner1(banner1)
+                .banner2(banner2)
+                .janchi(j)
+                .build();
+
+        bannerRepository.save(banner);
 
         return BannerResponseDto.builder()
                 .id(janchiId)
