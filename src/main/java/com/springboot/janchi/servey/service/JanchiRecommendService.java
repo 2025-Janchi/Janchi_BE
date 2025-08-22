@@ -80,6 +80,7 @@ public class JanchiRecommendService {
         String prompt = """
           너는 여행 플래너야. 설문과 '앞으로 열릴 잔치' 후보 목록(최대 12개) 중 **정확히 3개**를 골라.
           각 선택 이유는 한 줄로.
+          키워드는 3개만 뽑아.
 
           설문:
           - 인원수: %s
