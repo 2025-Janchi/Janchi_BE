@@ -102,6 +102,18 @@ public class BannerService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
+    public BannerResponseDto getSavedBanner(Long janchiId) {
+        Banner banner = bannerRepository.findFirstByJanchi_IdOrderByIdDesc(janchiId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 잔치의 배너가 없습니다. janchiId=" + janchiId));
+
+        return BannerResponseDto.builder()
+                .id(janchiId)
+                .banner1(banner.getBanner1())
+                .banner2(banner.getBanner2())
+                .build();
+    }
+
     public static String extractJson(String input) {
         Pattern pattern = Pattern.compile("\\{.*}", Pattern.DOTALL);
         Matcher matcher = pattern.matcher(input);

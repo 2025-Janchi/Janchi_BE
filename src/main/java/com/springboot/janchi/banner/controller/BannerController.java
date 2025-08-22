@@ -2,6 +2,7 @@ package com.springboot.janchi.banner.controller;
 
 import com.springboot.janchi.banner.dto.BannerResponseDto;
 import com.springboot.janchi.banner.service.BannerService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,7 @@ public class BannerController {
 
     private final BannerService bannerService;
 
-    @GetMapping("/{janchiId}")
+    @GetMapping("/save/{janchiId}")
     public ResponseEntity<BannerResponseDto> getBannerById(@PathVariable Long janchiId) {
         try {
             BannerResponseDto banner = bannerService.getRandomBanner(janchiId);
@@ -28,4 +29,17 @@ public class BannerController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @GetMapping("/view/{janchiId}")
+    public ResponseEntity<BannerResponseDto> getSavedBanner(@PathVariable Long janchiId) {
+        try {
+            return ResponseEntity.ok(bannerService.getSavedBanner(janchiId));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
 }
