@@ -23,7 +23,8 @@ public class Event {
     @Column(length = 255)
     private String bannerImageUrl;
 
-    @Column(length = 500)
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String description;
 
     private LocalDateTime startAt;
