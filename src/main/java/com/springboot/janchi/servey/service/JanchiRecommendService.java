@@ -1,6 +1,6 @@
 package com.springboot.janchi.servey.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.janchi.janchi.entity.Janchi;
 import com.springboot.janchi.janchi.repository.JanchiRepository;
 import com.springboot.janchi.servey.dto.GeminiReqDto;
