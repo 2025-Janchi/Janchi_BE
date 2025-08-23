@@ -114,6 +114,23 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <!-- main 클래스를 못 찾는 경우만 아래 주석 해제해서 명시
+                <configuration>
+                  <mainClass>com.springboot.janchi.JanchiApplication</mainClass>
+                </configuration>
+                -->
+            </plugin>
         </plugins>
     </build>
 </project>
