@@ -29,20 +29,17 @@ public class WebClientConfig implements WebMvcConfigurer {
         return new RestTemplate();
     }
 
-   @Override
-        public void addCorsMappings(CorsRegistry registry) {
-            registry.addMapping("/**")
-                    .allowedOriginPatterns(
-                            "http://localhost:5173",
-                            "https://janchi.pics",
-                            "https://52.79.249.187"
-                    )
-                    .allowedMethods("*");
-    }
 
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/images/**")
-                .addResourceLocations("classpath:/static/images/");
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOriginPatterns(
+                        "http://localhost:5173",
+                        "https://janchi.pics", 
+                        "http://52.79.249.187"
+                )
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") 
+                .allowedHeaders("*")
+                .allowCredentials(true);
     }
 }
