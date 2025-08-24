@@ -209,6 +209,13 @@ public class JanchiController {
             return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
     }
+
+    @GetMapping("/janchis/db")
+    public ResponseEntity<?> getJanchisFromDb() {
+        return ResponseEntity.ok(janchiService.getAllFromDb());
+    }
+
+
 }
 
 

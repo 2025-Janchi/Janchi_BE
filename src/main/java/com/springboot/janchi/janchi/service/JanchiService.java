@@ -234,4 +234,60 @@ public class JanchiService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
+    public List<JanchiDetailDto> getAllFromDb() {
+        List<Janchi> list = janchiRepository.findAll();
+
+        var tz = ZoneId.of("Asia/Seoul");
+        var today = LocalDate.now(tz);
+
+        List<JanchiDetailDto> result = new ArrayList<>();
+        for (Janchi f : list) {
+            var s = f.getStartDate();
+            var e = f.getEndDate() != null ? f.getEndDate() : f.getStartDate();
+
+            boolean ongoing = false;
+            Integer dday = null;
+            Integer duration = null;
+
+            if (s != null) {
+                if (e == null) e = s;
+                ongoing = !s.isAfter(today) && !e.isBefore(today); // s ≤ today ≤ e
+                if (ongoing) {
+                    dday = 0;
+                } else if (today.isBefore(s)) {
+                    dday = (int) (s.toEpochDay() - today.toEpochDay());
+                }
+                duration = (int) (e.toEpochDay() - s.toEpochDay()) + 1;
+            }
+
+            result.add(
+                    JanchiDetailDto.builder()
+                            .id(f.getId())
+                            .fstvlNm(f.getFstvlNm())
+                            .opar(f.getOpar())
+                            .startDate(f.getStartDate())
+                            .endDate(f.getEndDate())
+                            .fstvlCo(f.getFstvlCo())
+                            .mnnstNm(f.getMnnstNm())
+                            .auspcInsttNm(f.getAuspcInsttNm())
+                            .suprtInsttNm(f.getSuprtInsttNm())
+                            .phoneNumber(f.getPhoneNumber())
+                            .homepageUrl(f.getHomepageUrl())
+                            .relateInfo(f.getRelateInfo())
+                            .rdnmadr(f.getRdnmadr())
+                            .lnmadr(f.getLnmadr())
+                            .latitude(f.getLatitude())
+                            .longitude(f.getLongitude())
+                            .referenceDate(f.getReferenceDate())
+                            .ongoing(ongoing)
+                            .dday(dday)
+                            .duration(duration)
+                            .build()
+            );
+        }
+
+        return result;
+    }
+
 }
