@@ -146,6 +146,7 @@ public class JanchiRecommendService {
                             .fstvlStartDate(j.getStartDate() != null ? j.getStartDate().toString() : null)
                             .fstvlEndDate(j.getEndDate() != null ? j.getEndDate().toString() : null)
                             .opar(j.getOpar())
+                            .image(j.getImage())
                             .build());
                 }
             }
@@ -163,6 +164,7 @@ public class JanchiRecommendService {
                             .fstvlStartDate(ws.j().getStartDate() != null ? ws.j().getStartDate().toString() : null)
                             .fstvlEndDate(ws.j().getEndDate() != null ? ws.j().getEndDate().toString() : null)
                             .opar(ws.j().getOpar())
+                            .image(ws.j().getImage())
                             .build());
                 }
             }
@@ -178,7 +180,8 @@ public class JanchiRecommendService {
                             .reason("모델 응답 오류로 스코어 상위 추천")
                             .fstvlStartDate(ws.j().getStartDate() != null ? ws.j().getStartDate().toString() : null)
                             .fstvlEndDate(ws.j().getEndDate() != null ? ws.j().getEndDate().toString() : null)
-                            .opar(ws.j.getOpar())
+                            .opar(ws.j().getOpar())
+                            .image(ws.j().getImage())
                             .build())
                     .toList();
             return RecommendationResponseDto.builder().items(out).build();

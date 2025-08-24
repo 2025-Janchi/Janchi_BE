@@ -22,5 +22,6 @@ public class CourseResponseDto {
         private String description;
         private double lat; //위도
         private double lng; //경도
+        private String image;
     }
 }

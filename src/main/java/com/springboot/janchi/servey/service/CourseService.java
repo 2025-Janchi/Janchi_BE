@@ -97,6 +97,7 @@ public class CourseService {
                         .description(String.valueOf(m.get("description")))
                         .lat(Double.parseDouble(String.valueOf(m.get("lat"))))
                         .lng(Double.parseDouble(String.valueOf(m.get("lng"))))
+                        .image(String.valueOf(m.get("image")))
                         .build()
         ).toList();
 

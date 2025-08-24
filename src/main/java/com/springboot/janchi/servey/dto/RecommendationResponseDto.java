@@ -22,5 +22,6 @@ public class RecommendationResponseDto {
         private String fstvlStartDate;
         private String fstvlEndDate;
         private String opar;
+        private String image;
     }
 }
