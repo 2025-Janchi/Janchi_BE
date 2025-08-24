@@ -40,7 +40,7 @@ public class BannerService {
     @Value("${google.gemini.api-key}")
     private String geminiApiKey;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public BannerResponseDto getRandomBanner(Long janchiId) throws IOException {
         Janchi j = janchiRepository.findById(janchiId)
                 .orElseThrow(() -> new EntityNotFoundException("잔치 없음"));
@@ -102,7 +102,7 @@ public class BannerService {
                 .build();
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public BannerResponseDto getSavedBanner(Long janchiId) {
         Banner banner = bannerRepository.findFirstByJanchi_IdOrderByIdDesc(janchiId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 잔치의 배너가 없습니다. janchiId=" + janchiId));
