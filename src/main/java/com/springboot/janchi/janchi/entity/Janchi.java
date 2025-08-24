@@ -76,6 +76,11 @@ public class Janchi {
     @Column(name = "reference_date")
     private LocalDate referenceDate;
 
+    @Lob
+    @Column(name = "image")
+    private String image;
+
+
     @OneToMany(mappedBy = "janchi", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
 }

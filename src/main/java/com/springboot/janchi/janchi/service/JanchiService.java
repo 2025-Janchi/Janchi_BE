@@ -79,6 +79,7 @@ public class JanchiService {
                 .latitude(dto.getLatitude())
                 .longitude(dto.getLongitude())
                 .referenceDate(ref)
+                .image(dto.getImage())
                 .build();
     }
 
@@ -153,6 +154,7 @@ public class JanchiService {
                         exist.setLatitude(fr.getLatitude());
                         exist.setLongitude(fr.getLongitude());
                         exist.setReferenceDate(parseReference(fr.getReferenceDate()));
+                        exist.setImage(fr.getImage());
                         return exist;
                     })
                     .orElseGet(() -> toEntity(fr));
@@ -228,6 +230,7 @@ public class JanchiService {
                 .latitude(f.getLatitude())
                 .longitude(f.getLongitude())
                 .referenceDate(f.getReferenceDate())
+                .image(f.getImage())
                 .ongoing(ongoing)
                 .dday(dday)
                 .duration(duration)
@@ -280,6 +283,7 @@ public class JanchiService {
                             .latitude(f.getLatitude())
                             .longitude(f.getLongitude())
                             .referenceDate(f.getReferenceDate())
+                            .image(f.getImage())
                             .ongoing(ongoing)
                             .dday(dday)
                             .duration(duration)

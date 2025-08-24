@@ -26,6 +26,8 @@ public class JanchiResponse {
     private Double latitude;    // 위도
     private Double longitude;   // 경도
     private String referenceDate;  //데이터기준일자
+    private String image;
+
 
     public static JanchiResponse from(JsonNode it) {
         return new JanchiResponse(
@@ -45,7 +47,8 @@ public class JanchiResponse {
                 it.path("lnmadr").asText(null),
                 parseDoubleOrNull(it.path("latitude").asText(null)),
                 parseDoubleOrNull(it.path("longitude").asText(null)),
-                it.path("referenceDate").asText(null)
+                it.path("referenceDate").asText(null),
+                it.path("image").asText(null)
         );
     }
     private static String firstNonBlank(String a, String b){ return (a!=null && !a.isBlank())?a:((b!=null && !b.isBlank())?b:null); }

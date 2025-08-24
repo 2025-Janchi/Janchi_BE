@@ -31,4 +31,7 @@ public class JanchiDetailDto {
     private boolean ongoing;       // 진행중 여부
     private Integer dday;          // D-day (진행중=0, 끝난 경우=null)
     private Integer duration;      // 진행일수
+
+    private String image;
+
 }
