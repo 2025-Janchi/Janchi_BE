@@ -31,7 +31,13 @@ public class WebClientConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOriginPatterns("http://localhost:5173")
-                .allowedMethods("*");
+                .allowedOriginPatterns(
+                        "http://localhost:5173",
+                        "https://janchi.pics",
+                        "http://52.79.249.187"
+                )
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") 
+                .allowedHeaders("*")
+                .allowCredentials(true);
     }
 }
