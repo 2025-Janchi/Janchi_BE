@@ -43,11 +43,11 @@ public class WebClientConfig implements WebMvcConfigurer {
                 .allowCredentials(true);
     }
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // /images/ 로 시작하는 URL 요청이 오면
-        registry.addResourceHandler("/images/**")
-
-                .addResourceLocations("file:/home/ec2-user/app/images/");
-    }
+//    @Override
+//    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+//        // /images/ 로 시작하는 URL 요청이 오면
+//        registry.addResourceHandler("/images/**")
+//
+//                .addResourceLocations("file:/home/ec2-user/app/images/");
+//    }
 }
