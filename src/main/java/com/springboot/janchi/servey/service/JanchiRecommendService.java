@@ -147,6 +147,7 @@ public class JanchiRecommendService {
                             .fstvlEndDate(j.getEndDate() != null ? j.getEndDate().toString() : null)
                             .opar(j.getOpar())
                             .image(j.getImage())
+                            .homepageUrl(j.getHomepageUrl())
                             .build());
                 }
             }
@@ -165,6 +166,7 @@ public class JanchiRecommendService {
                             .fstvlEndDate(ws.j().getEndDate() != null ? ws.j().getEndDate().toString() : null)
                             .opar(ws.j().getOpar())
                             .image(ws.j().getImage())
+                            .homepageUrl(ws.j().getHomepageUrl())
                             .build());
                 }
             }
@@ -182,6 +184,7 @@ public class JanchiRecommendService {
                             .fstvlEndDate(ws.j().getEndDate() != null ? ws.j().getEndDate().toString() : null)
                             .opar(ws.j().getOpar())
                             .image(ws.j().getImage())
+                            .homepageUrl(ws.j().getHomepageUrl())
                             .build())
                     .toList();
             return RecommendationResponseDto.builder().items(out).build();

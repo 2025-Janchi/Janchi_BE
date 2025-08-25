@@ -23,5 +23,6 @@ public class RecommendationResponseDto {
         private String fstvlEndDate;
         private String opar;
         private String image;
+        private String homepageUrl;
     }
 }

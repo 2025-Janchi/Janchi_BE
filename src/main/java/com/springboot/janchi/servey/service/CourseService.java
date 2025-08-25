@@ -98,6 +98,7 @@ public class CourseService {
                         .lat(Double.parseDouble(String.valueOf(m.get("lat"))))
                         .lng(Double.parseDouble(String.valueOf(m.get("lng"))))
                         .image(String.valueOf(m.get("image")))
+                        .homepageUrl(String.valueOf(m.get("homepageUrl")))
                         .build()
         ).toList();
 
