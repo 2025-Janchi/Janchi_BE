@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,8 +53,11 @@ public class EventController {
         try {
             return ResponseEntity.ok(eventWinnerService.getOrPickWinners(eventId, count));
         } catch (IllegalStateException e) {
-            return ResponseEntity.status(403).body("당첨자 발표 기간이 아닙니다.");
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "당첨자 발표 기간이 아닙니다.");
+            return ResponseEntity.ok(response);
         }
     }
+
 
 }
